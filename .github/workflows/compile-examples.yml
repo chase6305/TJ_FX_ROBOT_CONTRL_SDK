@@ -42,3 +42,29 @@ jobs:
           g++ -std="$CPP_STANDARD" -pedantic-errors -Wall -Wextra -Wconversion -Werror \
             tests/kine_smoke.cpp -Ic++_win -Lc++_win -lKine -o "$RUNNER_TEMP/kine-smoke"
           LD_LIBRARY_PATH="$PWD/c++_win" "$RUNNER_TEMP/kine-smoke" "$PWD/c++_win"
+
+  compile-windows32:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Install the 32-bit Windows cross compiler
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends g++-mingw-w64-i686-posix
+      - name: Cross-compile and link examples without running them
+        run: |
+          mkdir -p "$RUNNER_TEMP/sdk-windows32"
+          for standard in c++11 c++17; do
+            for source in c++_win/*.cpp; do
+              library=MarvinSDK
+              case "$source" in
+                c++_win/my_dd.cpp|c++_win/movl_demo.cpp|c++_win/movlkeepj_demo.cpp) library=Kine ;;
+              esac
+              output="$RUNNER_TEMP/sdk-windows32/$(basename "${source%.cpp}")-$standard.exe"
+              i686-w64-mingw32-g++-posix -std="$standard" -Wall -Wextra \
+                "$source" -Lc++_win -l"$library" -o "$output"
+            done
+          done
