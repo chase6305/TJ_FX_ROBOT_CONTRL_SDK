@@ -1,0 +1,28 @@
+name: Check parameter error handling
+
+on:
+  pull_request:
+    paths:
+      - 'c\+\+_win/get_set_param_demo.cpp'
+      - 'c\+\+_win/MarvinSDK.h'
+      - 'tests/parameter_errors.cpp'
+      - '.github/workflows/parameter-errors.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  parameter-errors:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Run offline parameter failure scenarios
+        run: |
+          g++ -std=c++11 -O1 -g -Wall -Wextra -Wconversion -Werror \
+            -fsanitize=address,undefined -fno-sanitize-recover=all \
+            tests/parameter_errors.cpp -Ic++_win -o "$RUNNER_TEMP/parameter-errors"
+          "$RUNNER_TEMP/parameter-errors"
