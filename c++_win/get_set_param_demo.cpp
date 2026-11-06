@@ -70,26 +70,41 @@ int main()
   //获取整型参数
   char paraName[30]="R.A0.L0.BASIC.TorqueMax";
   long retValue=0;
-  OnGetIntPara(paraName,&retValue);
+  if (OnGetIntPara(paraName,&retValue) != 0) {
+      OnRelease();
+      return -1;
+  }
   printf("int param: %ld\n", retValue);
 
   //获取浮点型参数
   char paraName1[30]="R.A1.L0.BASIC.SensorK";
   double retValue1=0.0;
-  OnGetFloatPara(paraName1,&retValue1);
+  if (OnGetFloatPara(paraName1,&retValue1) != 0) {
+      OnRelease();
+      return -1;
+  }
   printf("float param: %lf\n", retValue1);
   usleep(100000);
 
   //设置整型参数
-  OnSetIntPara(paraName,retValue);
+  if (OnSetIntPara(paraName,retValue) != 0) {
+      OnRelease();
+      return -1;
+  }
   usleep(100000);
 
   //设置浮点型参数
-  OnSetFloatPara(paraName1, retValue1);
+  if (OnSetFloatPara(paraName1, retValue1) != 0) {
+      OnRelease();
+      return -1;
+  }
   usleep(100000);
 
   //保存参数
-  OnSavePara();
+  if (OnSavePara() != 0) {
+      OnRelease();
+      return -1;
+  }
   usleep(100000);
 
 
