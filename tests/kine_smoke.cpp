@@ -55,6 +55,28 @@ void check_arm(long serial, double dh[8][4]) {
         for (int j = 0; j < 4; ++j)
             close(target[i][j], reference[i][j], 1e-6, "FK differs from model DH");
 
+    Vect6 xyzabc = {};
+    Matrix4 converted = {};
+    require(FX_Matrix42XYZABCDEG(target, xyzabc), "Matrix to XYZABC conversion failed");
+    FX_XYZABC2Matrix4DEG(xyzabc, converted);
+    for (int i = 0; i < 4; ++i)
+        for (int j = 0; j < 4; ++j)
+            close(converted[i][j], target[i][j], 1e-6, "XYZABC pose round trip differs");
+
+    Matrix4 tool = {{0, -1, 0, 35}, {1, 0, 0, -20}, {0, 0, 1, 12}, {0, 0, 0, 1}};
+    Matrix4 tcp = {}, expected_tcp = {};
+    multiply(target, tool, expected_tcp);
+    require(FX_Robot_Tool_Set(serial, tool), "Tool setup failed");
+    require(FX_Robot_Kine_FK(serial, joints, tcp), "FK with tool failed");
+    for (int i = 0; i < 4; ++i)
+        for (int j = 0; j < 4; ++j)
+            close(tcp[i][j], expected_tcp[i][j], 1e-6, "Tool FK differs from flange-tool product");
+    require(FX_Robot_Tool_Rmv(serial), "Tool removal failed");
+    require(FX_Robot_Kine_FK(serial, joints, target), "FK after tool removal failed");
+    for (int i = 0; i < 4; ++i)
+        for (int j = 0; j < 4; ++j)
+            close(target[i][j], reference[i][j], 1e-6, "Tool removal did not restore flange FK");
+
     FX_InvKineSolvePara solve = {};
     std::memcpy(solve.m_Input_IK_TargetTCP, target, sizeof(Matrix4));
     std::memcpy(solve.m_Input_IK_RefJoint, joints, sizeof(Vect7));
