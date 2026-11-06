@@ -24,5 +24,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
       - name: Test all targets and failed compiler exit status
         run: python tests/windows_batch_build.py

@@ -71,7 +71,7 @@ class FakeCompiler {
                        log.read_text(encoding="utf-8-sig").splitlines()]
             assert len(records) == len(expected), (records, output)
             assert {name for _, name in records} == expected, (records, output)
-            assert all(Path(cwd) == sdk for cwd, _ in records), records
+            assert all(Path(cwd).samefile(sdk) for cwd, _ in records), (sdk, records)
             print("PASS:", failed_source or "all compilers succeed")
 
 
