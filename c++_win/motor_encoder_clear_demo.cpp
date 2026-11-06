@@ -83,7 +83,11 @@ int main()
 
     //订阅数据确保下使能后第一轴/关节的电机内编值清零
     //订阅查看双臂是否都下使能
-    OnGetBuf(&dcss);
+    if (!OnGetBuf(&dcss)) {
+        std::cerr << "failed: cannot read arm state" << std::endl;
+        OnRelease();
+        return -1;
+    }
     printf("current state of A arm:%d\n",dcss.m_State[0].m_CurState);
     printf("current state of B arm:%d\n",dcss.m_State[1].m_CurState);
     if (dcss.m_State[0].m_CurState==0 && dcss.m_State[1].m_CurState==0)
@@ -112,7 +116,11 @@ int main()
 
     //订阅数据确保下使能后第一轴/关节的电机外编值清零
     //订阅查看双臂是否都下使能
-    OnGetBuf(&dcss);
+    if (!OnGetBuf(&dcss)) {
+        std::cerr << "failed: cannot read arm state" << std::endl;
+        OnRelease();
+        return -1;
+    }
     printf("current state of A arm:%d\n",dcss.m_State[0].m_CurState);
     printf("current state of B arm:%d\n",dcss.m_State[1].m_CurState);
     if (dcss.m_State[0].m_CurState==0 && dcss.m_State[1].m_CurState==0)
@@ -142,7 +150,11 @@ int main()
 
     //订阅数据确保下使能后第一轴/关节的电机编码器清错
     //订阅查看双臂是否都下使能
-    OnGetBuf(&dcss);
+    if (!OnGetBuf(&dcss)) {
+        std::cerr << "failed: cannot read arm state" << std::endl;
+        OnRelease();
+        return -1;
+    }
     printf("current state of A arm:%d\n",dcss.m_State[0].m_CurState);
     printf("current state of B arm:%d\n",dcss.m_State[1].m_CurState);
     if (dcss.m_State[0].m_CurState==0 && dcss.m_State[1].m_CurState==0)
