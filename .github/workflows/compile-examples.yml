@@ -1,0 +1,36 @@
+name: Compile SDK examples
+
+on:
+  pull_request:
+    paths:
+      - 'c++_win/**'
+      - '.github/workflows/compile-examples.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        standard: [c++11, c++17]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Compile and link examples without running them
+        env:
+          CPP_STANDARD: ${{ matrix.standard }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/sdk-examples"
+          for source in c++_win/*.cpp; do
+            library=MarvinSDK
+            case "$source" in
+              c++_win/my_dd.cpp|c++_win/movl_demo.cpp|c++_win/movlkeepj_demo.cpp) library=Kine ;;
+            esac
+            output="$RUNNER_TEMP/sdk-examples/$(basename "${source%.cpp}")"
+            g++ -std="$CPP_STANDARD" -Wall -Wextra "$source" -Lc++_win -l"$library" -o "$output"
+          done
