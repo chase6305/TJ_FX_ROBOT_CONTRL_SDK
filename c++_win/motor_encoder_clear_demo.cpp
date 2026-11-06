@@ -92,8 +92,16 @@ int main()
         char paraName1[30]="RESETMOTENC0";
         //右臂电机内编
         char paraName11[30]="RESETMOTENC1";
-        OnSetIntPara(paraName1,axis);
-        OnSetIntPara(paraName11,axis);
+        if (OnSetIntPara(paraName1,axis) != 0) {
+            std::cerr << "failed: " << paraName1 << std::endl;
+            OnRelease();
+            return -1;
+        }
+        if (OnSetIntPara(paraName11,axis) != 0) {
+            std::cerr << "failed: " << paraName11 << std::endl;
+            OnRelease();
+            return -1;
+        }
         usleep(100000);
     } else{
         return -1;
@@ -113,8 +121,16 @@ int main()
         char paraName2[30]="RESETEXTENC0";
         //右臂电机外编
         char paraName22[30]="RESETEXTENC1";
-        OnSetIntPara(paraName2,axis);
-        OnSetIntPara(paraName22,axis);
+        if (OnSetIntPara(paraName2,axis) != 0) {
+            std::cerr << "failed: " << paraName2 << std::endl;
+            OnRelease();
+            return -1;
+        }
+        if (OnSetIntPara(paraName22,axis) != 0) {
+            std::cerr << "failed: " << paraName22 << std::endl;
+            OnRelease();
+            return -1;
+        }
         usleep(100000);
     } else{
         return -1;
@@ -135,8 +151,16 @@ int main()
         char paraName3[30]="CLEARMOTENC0";
         //右臂电机编码器
         char paraName33[30]="CLEARMOTENC1";
-        OnSetIntPara(paraName3,axis);
-        OnSetIntPara(paraName33,axis);
+        if (OnSetIntPara(paraName3,axis) != 0) {
+            std::cerr << "failed: " << paraName3 << std::endl;
+            OnRelease();
+            return -1;
+        }
+        if (OnSetIntPara(paraName33,axis) != 0) {
+            std::cerr << "failed: " << paraName33 << std::endl;
+            OnRelease();
+            return -1;
+        }
         usleep(100000);
     } else{
         return -1;
