@@ -18,6 +18,7 @@ std::vector<char> model_path;
 bool first_forward = true, inverse_called = false, raw_matches = false;
 int tested_phase = 1, injected_result = 0;
 double max_position_error = 0, max_rotation_error = 0;
+double requested_nsp_angle = std::numeric_limits<double>::quiet_NaN();
 } // namespace
 
 FX_BOOL checked_test_load(FX_CHAR*, FX_INT32L types[2], FX_DOUBLE gravity[2][3],
@@ -72,6 +73,7 @@ FX_BOOL checked_test_inverse(FX_INT32L serial, FX_InvKineSolvePara* solve) {
 }
 FX_BOOL checked_test_next_phase(FX_INT32L serial, FX_InvKineSolvePara* solve) {
     if (tested_phase == 1) throw Accepted{};
+    if (std::isfinite(requested_nsp_angle)) solve->m_Input_ZSP_Angle = requested_nsp_angle;
     return observe_result(serial, solve, FX_Robot_Kine_IK_NSP(serial, solve));
 }
 FX_BOOL checked_test_plan(FX_INT32L, Vect6, Vect6, Vect7, FX_DOUBLE, FX_DOUBLE, FX_CHAR*) {
@@ -97,10 +99,12 @@ void checked_test_exit(int status) { throw Rejected{status}; }
 #undef FX_Robot_Kine_FK
 #undef LOADMvCfg
 
-void verify(const double pose[7], int phase, int corruption = 0) {
+void verify(const double pose[7], int phase, int corruption = 0,
+            double nsp_angle = std::numeric_limits<double>::quiet_NaN()) {
     std::memcpy(input, pose, sizeof(Vect7));
     tested_phase = phase;
     injected_result = corruption;
+    requested_nsp_angle = nsp_angle;
     first_forward = true;
     inverse_called = raw_matches = false;
     max_position_error = max_rotation_error = 0;
@@ -133,9 +137,17 @@ int main(int argc, char** argv) {
         {-61.53455479196488, 20.3240464454627, 21.53559577951269, -11.792535724741228,
          67.90272049815118, 0.0013752369941357756, -14.980597603604885}
     };
+    const double nsp_poses[][7] = {
+        {-33.57561029907248, -58.17669673383937, -3.9264747517250385, 22.313299984608804,
+         14.274131270657193, -0.02064876576350194, -2.6073265564074504},
+        {22.702946890388873, -20.361485868460278, -65.23785024874935, 19.075264209007997,
+         82.34192071639558, 0.1308317431670929, 6.815373844339888}
+    };
     try {
         for (const auto& pose : poses) verify(pose, 1);
         verify(poses[0], 2);
+        verify(nsp_poses[0], 2, 0, 0.08646531597943508);
+        verify(nsp_poses[1], 2, 0, 0.9373247366290904);
         for (int phase = 1; phase <= 2; ++phase)
             for (int corruption = 1; corruption <= 3; ++corruption)
                 verify(poses[0], phase, corruption);
