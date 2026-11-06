@@ -138,7 +138,7 @@ void RobotKineDemo()
 
 
     ////////////////////////7. 计算逆运动学
-    FX_InvKineSolvePara sp;
+    FX_InvKineSolvePara sp = {};
     
     for (i = 0; i < 4; i++)
     {
