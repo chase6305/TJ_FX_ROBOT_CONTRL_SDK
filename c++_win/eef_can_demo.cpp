@@ -146,6 +146,10 @@ int main()
     // 发送HEX数据到CAN
     bool result = OnSetChDataA(data_ptr, size_int, set_ch);
     printf("函数执行结果: %s\n", result ? "成功" : "失败");
+    if (!result) {
+        OnRelease();
+        return -1;
+    }
 
     // 接收CAN的HEX数据
     long set_ch1 = 1;
