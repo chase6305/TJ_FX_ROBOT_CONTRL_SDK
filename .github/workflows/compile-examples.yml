@@ -68,3 +68,42 @@ jobs:
                 "$source" -Lc++_win -l"$library" -o "$output"
             done
           done
+      - name: Prepare offline math checks for Windows
+        run: |
+          bundle="$RUNNER_TEMP/kine-windows32"
+          mkdir -p "$bundle"
+          for standard in c++11 c++17; do
+            i686-w64-mingw32-g++-posix -std="$standard" -pedantic-errors \
+              -Wall -Wextra -Wconversion -Werror tests/kine_smoke.cpp \
+              -Ic++_win -Lc++_win -lKine -o "$bundle/kine-smoke-$standard.exe"
+          done
+          cp c++_win/libKine.dll c++_win/ccs_m3.MvKDCfg \
+            c++_win/ccs_m6.MvKDCfg c++_win/srs.MvKDCfg "$bundle/"
+          for name in libgcc_s_dw2-1.dll libstdc++-6.dll libwinpthread-1.dll; do
+            runtime=$(i686-w64-mingw32-g++-posix -print-file-name="$name")
+            test -f "$runtime"
+            cp "$runtime" "$bundle/"
+          done
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: kine-windows32
+          path: ${{ runner.temp }}/kine-windows32
+          if-no-files-found: error
+          retention-days: 1
+
+  check-windows32-math:
+    needs: compile-windows32
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: kine-windows32
+          path: ${{ runner.temp }}/kine-windows32
+      - name: Run only offline kinematics checks
+        working-directory: ${{ runner.temp }}/kine-windows32
+        run: |
+          foreach ($standard in @('c++11', 'c++17')) {
+            & ".\kine-smoke-$standard.exe" "."
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
