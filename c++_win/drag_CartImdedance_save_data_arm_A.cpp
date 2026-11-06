@@ -148,7 +148,7 @@ int main()
 
 
     //保存采集数据
-    char* save_path="drag_cart_y.txt";
+    char save_path[]="drag_cart_y.txt";
     OnSaveGatherData(save_path);
     sleep(5);
 

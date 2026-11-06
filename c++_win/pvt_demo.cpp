@@ -78,7 +78,7 @@ int main()
 
 
     //选择PVT轨迹文件和设置PVT号
-    char* path = "DEMO_SRS_Left.fmv"; //改成你的绝对路径
+    char path[] = "DEMO_SRS_Left.fmv"; //改成你的绝对路径
     long serial=27;
     bool re=false;
     re=OnSendPVT_A(path,serial);
@@ -122,7 +122,7 @@ int main()
 
 
     //保存数据为TXT
-    char* save_path="aaa.txt"; //改成你的绝对路径
+    char save_path[]="aaa.txt"; //改成你的绝对路径
     OnSaveGatherData(save_path);
     usleep(100000);
 

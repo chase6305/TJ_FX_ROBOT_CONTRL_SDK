@@ -149,7 +149,7 @@ int main()
 
 
     //保存采集数据
-    char* save_path="drag_joint.txt";
+    char save_path[]="drag_joint.txt";
     OnSaveGatherData(save_path);
     sleep(5);
 
