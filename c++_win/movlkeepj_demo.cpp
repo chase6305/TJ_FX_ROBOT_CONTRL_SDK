@@ -24,6 +24,7 @@ void RobotKineDemo()
     else
     {
         printf("Robot Load CFG Error\n");
+        exit(EXIT_FAILURE);
     }
     printf("------------------------------\n");
 
@@ -31,6 +32,7 @@ void RobotKineDemo()
     if (FX_Robot_Init_Type(0, TYPE[0]) == FX_FALSE)
     {
         printf("Robot Init Type Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -40,6 +42,7 @@ void RobotKineDemo()
     if (FX_Robot_Init_Kine(0, DH[0]) == FX_FALSE)
     {
         printf("Robot Init DH Parameters Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -49,6 +52,7 @@ void RobotKineDemo()
     if (FX_Robot_Init_Lmt(0, PNVA[0], BD[0]) == FX_FALSE)
     {
         printf("Robot Init Limit Parameters Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -71,7 +75,11 @@ void RobotKineDemo()
     char op[] = "testkeepj.txt";
     char* path = op;
 
-    FX_Robot_PLN_MOVL_KeepJ(0, angle1, angle2, 20, path);
+    if (FX_Robot_PLN_MOVL_KeepJ(0, angle1, angle2, 20, path) == FX_FALSE)
+    {
+        printf("Robot MOVL KeepJ Error\n");
+        exit(EXIT_FAILURE);
+    }
 
 }
 

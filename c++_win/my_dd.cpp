@@ -24,6 +24,7 @@ void RobotKineDemo()
     else
     {
         printf("Robot Load CFG Error\n");
+        exit(EXIT_FAILURE);
     }
     printf("------------------------------\n");
 
@@ -31,6 +32,7 @@ void RobotKineDemo()
     if (FX_Robot_Init_Type(0, TYPE[0]) == FX_FALSE)
     {
         printf("Robot Init Type Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -40,6 +42,7 @@ void RobotKineDemo()
     if (FX_Robot_Init_Kine(0, DH[0]) == FX_FALSE)
     {
         printf("Robot Init DH Parameters Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -49,6 +52,7 @@ void RobotKineDemo()
     if (FX_Robot_Init_Lmt(0, PNVA[0], BD[0]) == FX_FALSE)
     {
         printf("Robot Init Limit Parameters Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -78,6 +82,7 @@ void RobotKineDemo()
     if (FX_Robot_Tool_Set(0, tool) == FX_FALSE)
     {
         printf("Robot Set Tool Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -87,6 +92,7 @@ void RobotKineDemo()
     if (FX_Robot_Tool_Rmv(0) == FX_FALSE)
     {
         printf("Robot Remove Tool Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -102,6 +108,7 @@ void RobotKineDemo()
     if (FX_Robot_Kine_FK(0, jv, kine_pg) == FX_FALSE)
     {
         printf("Robot Forward Kinematics Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -116,6 +123,7 @@ void RobotKineDemo()
     if (FX_Matrix42XYZABCDEG(kine_pg, xyzabc) == FX_FALSE)
     {
         printf("matrix to xyzabc failed.");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -129,6 +137,7 @@ void RobotKineDemo()
     if (FX_Robot_Kine_Jacb(0, jv, &jcb) == FX_FALSE)
     {
         printf("Robot Jacobian Matrix Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -157,6 +166,7 @@ void RobotKineDemo()
     if (FX_Robot_Kine_IK(0, &sp) == FX_FALSE)
     {
         printf("Robot Inverse Kinamatics Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -170,6 +180,7 @@ void RobotKineDemo()
     if (FX_Robot_Kine_IK_NSP(0, &sp) == FX_FALSE)
     {
         printf("Robot Null-Space Inverse Kinamatics Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -190,6 +201,7 @@ void RobotKineDemo()
     if (FX_Robot_PLN_MOVL(0, start, end, jv, 100, 100, path) == FX_FALSE)
     {
         printf("Robot MOVL Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -208,6 +220,7 @@ void RobotKineDemo()
     if (FX_Robot_Iden_LoadDyn(1, ipath, &ret_m, ret_mr, ret_I) !=0)
     {
         printf("Robot Tool Dynamics Parameter Identification Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
