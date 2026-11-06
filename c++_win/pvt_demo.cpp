@@ -83,6 +83,10 @@ int main()
     bool re=false;
     re=OnSendPVT_A(path,serial);
     printf("send pvt return =%d\n",re);
+    if (!re) {
+        OnRelease();
+        return -1;
+    }
     usleep(100000);
 
     //设置保存数据的n参数并开始采集数据
