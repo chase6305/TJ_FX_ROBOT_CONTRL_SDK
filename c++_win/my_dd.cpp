@@ -148,7 +148,7 @@ void RobotKineDemo()
 
 
     ////////////////////////7. 计算逆运动学
-    FX_InvKineSolvePara sp;
+    FX_InvKineSolvePara sp = {};
     auto solution_matches_target = [&sp]() {
         for (int joint = 0; joint < 7; ++joint)
             if (!std::isfinite(sp.m_Output_RetJoint[joint])) return false;
