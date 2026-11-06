@@ -9,6 +9,11 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include <csignal>
+
+static volatile std::sig_atomic_t stop_requested = 0;
+
+void request_stop(int) { stop_requested = 1; }
 
 // '''#################################################################
 // 该DEMO 为末端模组485通信控制案列
@@ -144,7 +149,9 @@ int main()
     long set_ch1 = 2;
     unsigned char data_buf[256]; 
     char hex_str1[sizeof(data_buf) * 3 + 1];
-    while (true) {
+    std::signal(SIGINT, request_stop);
+    std::signal(SIGTERM, request_stop);
+    while (!stop_requested) {
         long data_size = OnGetChDataA(data_buf, &set_ch1);
         usleep(200000);
         if (data_size >= 1 && data_size <= static_cast<long>(sizeof(data_buf))) {
@@ -155,5 +162,5 @@ int main()
 
     //任务完成,释放内存使别的程序或者用户可以连接机器人
     OnRelease();
-    return 1;
+    return 0;
  }
