@@ -145,14 +145,13 @@ int main()
     // 接收CAN的HEX数据
     long set_ch1 = 1;
     unsigned char data_buf[256]; 
-    int data_size = 0;
-    char hex_str1[512]; 
+    char hex_str1[sizeof(data_buf) * 3 + 1];
     while (true) {
-        int tag = OnGetChDataA(data_buf, &set_ch1);
-        sleep(0.2);
-        if (tag >= 1) {
-            hex_to_str(data_buf, data_size, hex_str1, sizeof(hex_str1));
-            printf("接收信号: %d, 接收的HEX数据: %s", tag, hex_str1);
+        long data_size = OnGetChDataA(data_buf, &set_ch1);
+        usleep(200000);
+        if (data_size >= 1 && data_size <= static_cast<long>(sizeof(data_buf))) {
+            hex_to_str(data_buf, static_cast<int>(data_size), hex_str1, sizeof(hex_str1));
+            printf("接收信号: %ld, 接收的HEX数据: %s\n", data_size, hex_str1);
         }
     }
     //任务完成,释放内存使别的程序或者用户可以连接机器人
