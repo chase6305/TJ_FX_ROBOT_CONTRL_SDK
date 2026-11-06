@@ -4,8 +4,6 @@
 
 void RobotKineDemo()
 {
-    FX_INT32L i = 0;
-    FX_INT32L j = 0;
 
    ////////////////////////导入运动学参数
     FX_INT32L TYPE[2];
