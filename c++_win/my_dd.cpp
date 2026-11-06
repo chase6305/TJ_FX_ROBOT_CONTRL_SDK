@@ -158,6 +158,7 @@ void RobotKineDemo()
         for (int row = 0; row < 3; ++row) {
             for (int column = 0; column < 4; ++column) {
                 const double error = returned[row][column] - sp.m_Input_IK_TargetTCP[row][column];
+                // 平移使用 mm，旋转矩阵元素为无量纲。
                 const double tolerance = column == 3 ? 1e-3 : 1e-6;
                 if (!std::isfinite(error) || std::abs(error) > tolerance) return false;
             }
