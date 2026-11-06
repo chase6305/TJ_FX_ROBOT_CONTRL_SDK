@@ -113,21 +113,30 @@ int main()
         0,0,0,0,0,0,0,
         0,0,0,0,0,0,0};
     long recordNum=1000;
-    OnStartGather(targetNum, targetID, recordNum);
+    if (!OnStartGather(targetNum, targetID, recordNum)) {
+        OnRelease();
+        return -1;
+    }
     usleep(100000);
 
 
     //执行指定的PVT号
     int id=27;
-    OnClearSet();
-    OnSetPVT_A(id);
-    OnSetSend();
+    if (!OnClearSet() || !OnSetPVT_A(id) || !OnSetSend()) {
+        OnStopGather();
+        OnRelease();
+        return -1;
+    }
     sleep(10);//模拟执行时长
 
 
     //保存数据为TXT
     char* save_path="aaa.txt"; //改成你的绝对路径
-    OnSaveGatherData(save_path);
+    if (!OnSaveGatherData(save_path)) {
+        OnStopGather();
+        OnRelease();
+        return -1;
+    }
     usleep(100000);
 
     //任务完成,释放内存使别的程序或者用户可以连接机器人
