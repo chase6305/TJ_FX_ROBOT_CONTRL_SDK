@@ -5,6 +5,7 @@ on:
     paths:
       - 'c\+\+_win/**'
       - '.github/workflows/compile-examples.yml'
+      - 'tests/kine_smoke.cpp'
   workflow_dispatch:
 
 permissions:
@@ -34,3 +35,10 @@ jobs:
             output="$RUNNER_TEMP/sdk-examples/$(basename "${source%.cpp}")"
             g++ -std="$CPP_STANDARD" -Wall -Wextra "$source" -Lc++_win -l"$library" -o "$output"
           done
+      - name: Check offline FK, IK and Jacobian
+        env:
+          CPP_STANDARD: ${{ matrix.standard }}
+        run: |
+          g++ -std="$CPP_STANDARD" -pedantic-errors -Wall -Wextra -Wconversion -Werror \
+            tests/kine_smoke.cpp -Ic++_win -Lc++_win -lKine -o "$RUNNER_TEMP/kine-smoke"
+          LD_LIBRARY_PATH="$PWD/c++_win" "$RUNNER_TEMP/kine-smoke" "$PWD/c++_win"
