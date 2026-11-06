@@ -76,6 +76,11 @@ int main()
     OnSetSend();
     usleep(100000);
 
+    if (!OnGetBuf(&dcss) || dcss.m_State[0].m_CurState != ARM_STATE_PVT ||
+        dcss.m_State[0].m_ERRCode != 0) {
+        OnRelease();
+        return -1;
+    }
 
     //选择PVT轨迹文件和设置PVT号
     char path[] = "DEMO_SRS_Left.fmv"; //改成你的绝对路径
