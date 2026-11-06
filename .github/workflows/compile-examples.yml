@@ -3,7 +3,7 @@ name: Compile SDK examples
 on:
   pull_request:
     paths:
-      - 'c++_win/**'
+      - 'c\+\+_win/**'
       - '.github/workflows/compile-examples.yml'
   workflow_dispatch:
 
