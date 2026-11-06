@@ -26,7 +26,7 @@
 int main()
 {
     // 初始化订阅数据的结构体
-    DCSS t;
+    DCSS dcss;
 
     // 查验连接是否成功
     bool init = OnLinkTo(192,168,1,190);
@@ -46,13 +46,13 @@ int main()
         int frame_update = 0;
 
         for (int i = 0; i < 5; i++) {
-          OnGetBuf(&t);
-          std::cout << "connect frames :" << t.m_Out[0].m_OutFrameSerial << std::endl;
+          OnGetBuf(&dcss);
+          std::cout << "connect frames :" << dcss.m_Out[0].m_OutFrameSerial << std::endl;
 
-          if (t.m_Out[0].m_OutFrameSerial != 0 &&
-              frame_update != t.m_Out[0].m_OutFrameSerial) {
+          if (dcss.m_Out[0].m_OutFrameSerial != 0 &&
+              frame_update != dcss.m_Out[0].m_OutFrameSerial) {
               motion_tag++;
-              frame_update = t.m_Out[0].m_OutFrameSerial;
+              frame_update = dcss.m_Out[0].m_OutFrameSerial;
           }
           usleep(100000);
         }
