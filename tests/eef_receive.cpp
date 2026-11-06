@@ -12,7 +12,7 @@
 namespace {
 int receive_count = 0, poll_waits = 0, releases = 0, frame = 0;
 int stop_signal = SIGINT;
-bool receiving = false, invalid_wait = false;
+bool receiving = false, invalid_wait = false, transmit_ok = true;
 std::string printed;
 const long lengths[] = {-1, 0, 1, 8, 170, 171, 256, 257};
 }
@@ -64,7 +64,7 @@ bool OnGetBuf(DCSS* value) {
 bool OnSetJointLmt_A(int, int) { return true; }
 bool OnSetTargetState_A(int) { return true; }
 bool OnClearChDataA() { return true; }
-bool OnSetChDataA(unsigned char*, long, long) { return true; }
+bool OnSetChDataA(unsigned char*, long, long) { return transmit_ok; }
 long OnGetChDataA(unsigned char* data, long* channel) {
     receiving = true;
     const int index = receive_count++;
@@ -109,14 +109,27 @@ void verify(int signal) {
         throw std::runtime_error("Received frames were truncated or invalid lengths were printed");
 }
 
+void verify_failed_transmission() {
+    transmit_ok = false;
+    receive_count = poll_waits = releases = frame = 0;
+    receiving = invalid_wait = false;
+    printed.clear();
+    stop_requested = 0;
+    stop_signal = SIGINT;
+    const int result = eef_example_main();
+    if (result != -1 || receive_count != 0 || poll_waits != 0 || releases != 1)
+        throw std::runtime_error("Failed transmission did not release before reception");
+}
+
 int main() {
     try {
         verify(SIGINT);
         verify(SIGTERM);
+        verify_failed_transmission();
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
         return 1;
     }
-    std::cout << "PASS 8 receive lengths and both stop signals\n";
+    std::cout << "PASS receive boundaries, stop signals and failed transmission\n";
     return 0;
 }
