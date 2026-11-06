@@ -1,12 +1,6 @@
 name: Windows batch regression
 
 on:
-  push:
-    paths:
-      - 'c\+\+_win/auto_complie.bat'
-      - 'c\+\+_win/*.cpp'
-      - 'tests/windows_batch_build.py'
-      - '.github/workflows/windows-batch.yml'
   pull_request:
     paths:
       - 'c\+\+_win/auto_complie.bat'
