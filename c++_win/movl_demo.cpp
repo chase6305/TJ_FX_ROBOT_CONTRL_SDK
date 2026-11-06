@@ -24,6 +24,7 @@ void RobotKineDemo()
     else
     {
         printf("Robot Load CFG Error\n");
+        exit(EXIT_FAILURE);
     }
     printf("------------------------------\n");
 
@@ -31,6 +32,7 @@ void RobotKineDemo()
     if (FX_Robot_Init_Type(0, TYPE[0]) == FX_FALSE)
     {
         printf("Robot Init Type Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -40,6 +42,7 @@ void RobotKineDemo()
     if (FX_Robot_Init_Kine(0, DH[0]) == FX_FALSE)
     {
         printf("Robot Init DH Parameters Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -49,6 +52,7 @@ void RobotKineDemo()
     if (FX_Robot_Init_Lmt(0, PNVA[0], BD[0]) == FX_FALSE)
     {
         printf("Robot Init Limit Parameters Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -63,6 +67,7 @@ void RobotKineDemo()
     if (FX_Robot_Kine_FK(0, jv, kine_pg) == FX_FALSE)
     {
         printf("Robot Forward Kinematics Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -83,6 +88,7 @@ void RobotKineDemo()
     if (FX_Robot_PLN_MOVL(0, start, end, jv, 100, 100, path) == FX_FALSE)
     {
         printf("Robot MOVL Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
