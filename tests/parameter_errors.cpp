@@ -60,9 +60,10 @@ void verify(int failed_step, long status) {
     error_code = status;
     operation_count = release_count = frame = 0;
     incorrect_value = false;
-    static_cast<void>(parameter_example_main());
+    const int result = parameter_example_main();
     const int expected_operations = failed_step ? failed_step : 5;
-    if (operation_count != expected_operations || release_count != 1 || incorrect_value)
+    if (operation_count != expected_operations || release_count != 1 || incorrect_value ||
+        (result < 0) != (failed_step != 0))
         throw std::runtime_error("Parameter failure did not stop subsequent operations or release correctly");
 }
 
