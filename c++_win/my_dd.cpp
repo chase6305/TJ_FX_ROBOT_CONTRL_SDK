@@ -1,6 +1,7 @@
 #include "FxRobot.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <cmath>
 
 void RobotKineDemo()
 {
@@ -148,6 +149,21 @@ void RobotKineDemo()
 
     ////////////////////////7. 计算逆运动学
     FX_InvKineSolvePara sp;
+    auto solution_matches_target = [&sp]() {
+        for (int joint = 0; joint < 7; ++joint)
+            if (!std::isfinite(sp.m_Output_RetJoint[joint])) return false;
+        Matrix4 returned = {};
+        if (FX_Robot_Kine_FK(0, sp.m_Output_RetJoint, returned) == FX_FALSE)
+            return false;
+        for (int row = 0; row < 3; ++row) {
+            for (int column = 0; column < 4; ++column) {
+                const double error = returned[row][column] - sp.m_Input_IK_TargetTCP[row][column];
+                const double tolerance = column == 3 ? 1e-3 : 1e-6;
+                if (!std::isfinite(error) || std::abs(error) > tolerance) return false;
+            }
+        }
+        return true;
+    };
     
     for (i = 0; i < 4; i++)
     {
@@ -163,7 +179,7 @@ void RobotKineDemo()
     }
     //FX_M44Copy(kine_pg, sp.m_Input_IK_TargetTCP);
     //FX_Vect7Copy(jv, sp.m_Input_IK_RefJoint);
-    if (FX_Robot_Kine_IK(0, &sp) == FX_FALSE)
+    if (FX_Robot_Kine_IK(0, &sp) == FX_FALSE || !solution_matches_target())
     {
         printf("Robot Inverse Kinamatics Error\n");
         exit(EXIT_FAILURE);
@@ -177,7 +193,7 @@ void RobotKineDemo()
     ////////////////////////8.计算末端位姿不变、改变零空间（臂角方向）的逆运动学
     sp.m_Input_IK_ZSPType = 0;
     sp.m_Input_ZSP_Angle -= 1;
-    if (FX_Robot_Kine_IK_NSP(0, &sp) == FX_FALSE)
+    if (FX_Robot_Kine_IK_NSP(0, &sp) == FX_FALSE || !solution_matches_target())
     {
         printf("Robot Null-Space Inverse Kinamatics Error\n");
         exit(EXIT_FAILURE);
@@ -191,6 +207,11 @@ void RobotKineDemo()
 
 
     ////////////////////////9. ֱ直线规划（MOVL）
+    // FK 回代会更新求解器缓存，规划前恢复起始关节。
+    if (FX_Robot_Kine_FK(0, jv, kine_pg) == FX_FALSE) {
+        printf("Robot Forward Kinematics Error\n");
+        exit(EXIT_FAILURE);
+    }
     //特别提示:直线规划前,需要将起始关节位置调正解接口,将数据更新到起始关节.
     Vect6 start = { -187.0254426109816, -66.71264281828329, 832.0536847286807, 4.174345954026256, -29.162364453381763, 32.135018044129566};//调用FX_Matrix42XYZABCDEG得到的XYZABC
     Vect6 end = { -177.0254426109816, -66.71264281828329, 832.0536847286807, 4.174345954026256, -29.162364453381763, 32.135018044129566};// 在X方向移动10毫米
