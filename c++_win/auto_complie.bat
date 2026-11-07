@@ -1,4 +1,7 @@
 @echo off
+setlocal
+pushd "%~dp0" || exit /b 1
+set "SDK_BUILD_FAILED=0"
 echo 开始编译所有程序...
 
 :: 编译运动学程序
@@ -6,7 +9,32 @@ g++ my_dd.cpp -L. -lKine -o kine.exe
 if %errorlevel% == 0 (
     echo ✓ kine.exe 编译成功
 ) else (
+    set "SDK_BUILD_FAILED=1"
     echo ✗ kine.exe 编译失败
+)
+
+g++ movl_demo.cpp -L. -lKine -o movl_demo.exe
+if %errorlevel% == 0 (
+    echo movl_demo.exe 编译成功
+) else (
+    set "SDK_BUILD_FAILED=1"
+    echo movl_demo.exe 编译失败
+)
+
+g++ movlkeepj_demo.cpp -L. -lKine -o movlkeepj_demo.exe
+if %errorlevel% == 0 (
+    echo movlkeepj_demo.exe 编译成功
+) else (
+    set "SDK_BUILD_FAILED=1"
+    echo movlkeepj_demo.exe 编译失败
+)
+
+g++ motor_encoder_clear_demo.cpp -L. -lMarvinSDK -o motor_encoder_clear_demo.exe
+if %errorlevel% == 0 (
+    echo motor_encoder_clear_demo.exe 编译成功
+) else (
+    set "SDK_BUILD_FAILED=1"
+    echo motor_encoder_clear_demo.exe 编译失败
 )
 
 :: 编译控制的程序
@@ -15,6 +43,7 @@ g++ link_check_demo.cpp -L. -lMarvinSDK -o check_link.exe
 if %errorlevel% == 0 (
     echo ✓ check_link.exe 编译成功
 ) else (
+    set "SDK_BUILD_FAILED=1"
     echo ✗ check_link.exe 编译失败
 )
 
@@ -24,6 +53,7 @@ g++ torque_joint_impedance_demo.cpp -L. -lMarvinSDK -o torque_joint.exe
 if %errorlevel% == 0 (
     echo ✓ torque_joint.exe 编译成功
 ) else (
+    set "SDK_BUILD_FAILED=1"
     echo ✗ torque_joint.exe 编译失败
 )
 
@@ -33,6 +63,7 @@ g++ torque_cart_impedance_demo.cpp -L. -lMarvinSDK -o torque_cart.exe
 if %errorlevel% == 0 (
     echo ✓ torque_cart.exe 编译成功
 ) else (
+    set "SDK_BUILD_FAILED=1"
     echo ✗ torque_cart.exe 编译失败
 )
 
@@ -41,6 +72,7 @@ g++ torque_force_impedance_demo.cpp -L. -lMarvinSDK -o torque_force.exe
 if %errorlevel% == 0 (
     echo ✓ torque_force.exe 编译成功
 ) else (
+    set "SDK_BUILD_FAILED=1"
     echo ✗ torque_force.exe 编译失败
 )
 
@@ -49,6 +81,7 @@ g++ drag_demo.cpp -L. -lMarvinSDK -o drag.exe
 if %errorlevel% == 0 (
     echo ✓ drag.exe 编译成功
 ) else (
+    set "SDK_BUILD_FAILED=1"
     echo ✗ drag.exe 编译失败
 )
 
@@ -58,6 +91,7 @@ g++ position_demo.cpp -L. -lMarvinSDK -o position_demo.exe
 if %errorlevel% == 0 (
     echo ✓ position_demo.exe 编译成功
 ) else (
+    set "SDK_BUILD_FAILED=1"
     echo ✗ position_demo.exe 编译失败
 )
 
@@ -66,6 +100,7 @@ g++ pvt_demo.cpp -L. -lMarvinSDK -o pvt_demo.exe
 if %errorlevel% == 0 (
     echo ✓ pvt_demo.exe 编译成功
 ) else (
+    set "SDK_BUILD_FAILED=1"
     echo ✗ pvt_demo.exe 编译失败
 )
 
@@ -75,6 +110,7 @@ g++ eef_485_demo.cpp -L. -lMarvinSDK -o eef_485.exe
 if %errorlevel% == 0 (
     echo ✓ eef_485.exe 编译成功
 ) else (
+    set "SDK_BUILD_FAILED=1"
     echo ✗ eef_485.exe 编译失败
 )
 
@@ -84,6 +120,7 @@ g++ eef_can_demo.cpp -L. -lMarvinSDK -o eef_can.exe
 if %errorlevel% == 0 (
     echo ✓ eef_can.exe 编译成功
 ) else (
+    set "SDK_BUILD_FAILED=1"
     echo ✗ eef_can.exe 编译失败
 )
 
@@ -93,6 +130,7 @@ g++ get_set_param_demo.cpp -L. -lMarvinSDK -o get_set_param.exe
 if %errorlevel% == 0 (
     echo ✓ get_set_param.exe 编译成功
 ) else (
+    set "SDK_BUILD_FAILED=1"
     echo ✗ get_set_param.exe 编译失败
 )
 
@@ -102,6 +140,7 @@ g++ apply-brake_release-brake_demo.cpp -L. -lMarvinSDK -o apply-brake_release-br
 if %errorlevel% == 0 (
     echo ✓ apply-brake_release-brake.exe 编译成功
 ) else (
+    set "SDK_BUILD_FAILED=1"
     echo ✗ apply-brake_release-brake.exe 编译失败
 )
 
@@ -110,6 +149,7 @@ g++ collaborative_release_demo.cpp -L. -lMarvinSDK -o collaborative_release_demo
 if %errorlevel% == 0 (
     echo ✓ collaborative_release_demo.exe 编译成功
 ) else (
+    set "SDK_BUILD_FAILED=1"
     echo ✗ collaborative_release_demo.exe 编译失败
 )
 
@@ -118,6 +158,7 @@ g++ drag_JointImdedance_save_data_arm_A.cpp -L. -lMarvinSDK -o drag_JointImdedan
 if %errorlevel% == 0 (
     echo ✓ drag_JointImdedance_save_data_arm_A.exe 编译成功
 ) else (
+    set "SDK_BUILD_FAILED=1"
     echo ✗ drag_JointImdedance_save_data_arm_A.exe 编译失败
 )
 
@@ -128,6 +169,7 @@ g++ drag_CartImdedance_save_data_arm_A.cpp -L. -lMarvinSDK -o drag_CartImdedance
 if %errorlevel% == 0 (
     echo ✓ drag_CartImdedance_save_data_arm_A.exe 编译成功
 ) else (
+    set "SDK_BUILD_FAILED=1"
     echo ✗ drag_CartImdedance_save_data_arm_A.exe 编译失败
 )
 
@@ -135,3 +177,5 @@ if %errorlevel% == 0 (
 
 echo 编译完成！
 pause
+popd
+endlocal & exit /b %SDK_BUILD_FAILED%

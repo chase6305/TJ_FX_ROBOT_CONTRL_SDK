@@ -1,0 +1,24 @@
+name: Windows batch regression
+
+on:
+  pull_request:
+    paths:
+      - 'c\+\+_win/auto_complie.bat'
+      - 'c\+\+_win/*.cpp'
+      - 'tests/windows_batch_build.py'
+      - '.github/workflows/windows-batch.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  batch-control-flow:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Test all targets and failed compiler exit status
+        run: python tests/windows_batch_build.py
