@@ -1,0 +1,31 @@
+name: Check end-effector receive handling
+
+on:
+  pull_request:
+    paths:
+      - 'c\+\+_win/eef_*_demo.cpp'
+      - 'c\+\+_win/MarvinSDK.h'
+      - 'tests/eef_receive.cpp'
+      - '.github/workflows/eef-receive.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  receive-boundaries:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Check CAN and 485 with an inert SDK replacement
+        run: |
+          for source in eef_can_demo.cpp eef_485_demo.cpp; do
+            g++ -std=c++11 -O1 -g -Wall -Wextra -Wconversion -Werror \
+              -fsanitize=address,undefined -fno-sanitize-recover=all \
+              tests/eef_receive.cpp -Ic++_win -DEEF_SOURCE=\"../c++_win/$source\" \
+              -o "$RUNNER_TEMP/eef-receive"
+            "$RUNNER_TEMP/eef-receive"
+          done
