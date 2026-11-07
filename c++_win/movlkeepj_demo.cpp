@@ -4,8 +4,6 @@
 
 void RobotKineDemo()
 {
-    FX_INT32L i = 0;
-    FX_INT32L j = 0;
 
    ////////////////////////导入运动学参数
     FX_INT32L TYPE[2];
@@ -24,6 +22,7 @@ void RobotKineDemo()
     else
     {
         printf("Robot Load CFG Error\n");
+        exit(EXIT_FAILURE);
     }
     printf("------------------------------\n");
 
@@ -31,6 +30,7 @@ void RobotKineDemo()
     if (FX_Robot_Init_Type(0, TYPE[0]) == FX_FALSE)
     {
         printf("Robot Init Type Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -40,6 +40,7 @@ void RobotKineDemo()
     if (FX_Robot_Init_Kine(0, DH[0]) == FX_FALSE)
     {
         printf("Robot Init DH Parameters Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -49,6 +50,7 @@ void RobotKineDemo()
     if (FX_Robot_Init_Lmt(0, PNVA[0], BD[0]) == FX_FALSE)
     {
         printf("Robot Init Limit Parameters Error\n");
+        exit(EXIT_FAILURE);
     }
     else
     {
@@ -58,8 +60,6 @@ void RobotKineDemo()
 
 
     ////////////////////////test MOVL J
-    FX_DOUBLE start_j[7] = { 10,20,30,40,50,10,20 };
-    FX_DOUBLE stop_j[7] = { 20,30,40,50,60,70,80 };
 
     /* FX_DOUBLE angle1[7] = { -146.830,7.110,6.660,-94.920,2.690,5.11,-47.390 };
      FX_DOUBLE angle2[7] = { -146.043,-16.088,0.562,-68.108,1.848,5.167,-61.515 };*/
@@ -71,7 +71,11 @@ void RobotKineDemo()
     char op[] = "testkeepj.txt";
     char* path = op;
 
-    FX_Robot_PLN_MOVL_KeepJ(0, angle1, angle2, 20, path);
+    if (FX_Robot_PLN_MOVL_KeepJ(0, angle1, angle2, 20, path) == FX_FALSE)
+    {
+        printf("Robot MOVL KeepJ Error\n");
+        exit(EXIT_FAILURE);
+    }
 
 }
 

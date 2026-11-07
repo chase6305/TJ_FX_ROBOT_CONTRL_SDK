@@ -1,0 +1,30 @@
+name: Check inverse-result acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'c\+\+_win/my_dd.cpp'
+      - 'c\+\+_win/FxRobot.h'
+      - 'c\+\+_win/libKine.so'
+      - 'c\+\+_win/srs.MvKDCfg'
+      - 'tests/checked_inverse.cpp'
+      - '.github/workflows/checked-inverse.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inverse-acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Check actual inverse results before the example advances
+        run: |
+          g++ -std=c++11 -O1 -g -pedantic-errors -Wall -Wextra -Wconversion -Werror \
+            -fsanitize=address,undefined -fno-sanitize-recover=all \
+            tests/checked_inverse.cpp -Ic++_win -Lc++_win -lKine -o "$RUNNER_TEMP/checked-inverse"
+          LD_LIBRARY_PATH="$PWD/c++_win" "$RUNNER_TEMP/checked-inverse" "$PWD/c++_win/srs.MvKDCfg"
