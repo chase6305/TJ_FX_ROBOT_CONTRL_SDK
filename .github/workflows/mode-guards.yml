@@ -1,0 +1,34 @@
+name: Check joint-command mode guards
+
+on:
+  pull_request:
+    paths:
+      - 'c\+\+_win/position_demo.cpp'
+      - 'c\+\+_win/torque_*_impedance_demo.cpp'
+      - 'c\+\+_win/MarvinSDK.h'
+      - 'tests/mode_guards.cpp'
+      - '.github/workflows/mode-guards.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mode-guards:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Check joint targets using inert SDK replacements
+        run: |
+          for source in position_demo.cpp torque_joint_impedance_demo.cpp torque_cart_impedance_demo.cpp torque_force_impedance_demo.cpp; do
+            extra=()
+            if [ "$source" = position_demo.cpp ]; then extra=(-DPOSITION_EXAMPLE); fi
+            g++ -std=c++11 -O1 -g -Wall -Wextra -Wconversion -Werror \
+              -fsanitize=address,undefined -fno-sanitize-recover=all \
+              tests/mode_guards.cpp -Ic++_win -DMODE_SOURCE=\"../c++_win/$source\" \
+              "${extra[@]}" -o "$RUNNER_TEMP/mode-guards"
+            "$RUNNER_TEMP/mode-guards"
+          done

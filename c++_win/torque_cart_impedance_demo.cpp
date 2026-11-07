@@ -93,7 +93,11 @@ int main()
     usleep(100000);
 
     //刷新订阅数据查看设置是否成功
-    OnGetBuf(&t);
+    if (!OnGetBuf(&t) || t.m_State[0].m_CurState != ARM_STATE_TORQ ||
+        t.m_State[0].m_ERRCode != 0 || t.m_In[0].m_ImpType != 2) {
+        OnRelease();
+        return -1;
+    }
     printf("current state of A arm:%d\n",t.m_State[0].m_CurState);
     printf("cmd state of A arm:%d\n",t.m_State[0].m_CmdState);
     printf("error code of A arms:%d\n",t.m_State[0].m_ERRCode);
@@ -101,13 +105,13 @@ int main()
     printf("CMD of impedance:%d\n",t.m_In[0].m_ImpType);
     printf("CMD of vel and acc:%d %d\n",t.m_In[0].m_Joint_Vel_Ratio,t.m_In[0].m_Joint_Acc_Ratio);
     
-    printf("CMD of cart D=[%lf %lf %lf %lf %lf %lf %lf]\n",t.m_In[0].m_Cart_K[0],
+    printf("CMD of cart K=[%lf %lf %lf %lf %lf %lf %lf]\n",t.m_In[0].m_Cart_K[0],
                                                             t.m_In[0].m_Cart_K[1],
                                                             t.m_In[0].m_Cart_K[2],
                                                             t.m_In[0].m_Cart_K[3],
                                                             t.m_In[0].m_Cart_K[4],
                                                             t.m_In[0].m_Cart_K[5],
-                                                            t.m_In[0].m_Cart_K[6]);
+                                                            t.m_In[0].m_Cart_KN);
 
     printf("CMD of cart D=[%lf %lf %lf %lf %lf %lf %lf]\n",t.m_In[0].m_Cart_D[0],
                                                             t.m_In[0].m_Cart_D[1],
@@ -115,7 +119,7 @@ int main()
                                                             t.m_In[0].m_Cart_D[3],
                                                             t.m_In[0].m_Cart_D[4],
                                                             t.m_In[0].m_Cart_D[5],
-                                                            t.m_In[0].m_Cart_D[6]);
+                                                            t.m_In[0].m_Cart_DN);
 
     printf("CMD of cart type=%d\n",t.m_In[0].m_Cart_KD_Type);
 

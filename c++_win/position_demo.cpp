@@ -73,7 +73,11 @@ int main()
 
 
     //订阅查看设置是否成功
-    OnGetBuf(&dcss);
+    if (!OnGetBuf(&dcss) || dcss.m_State[0].m_CurState != ARM_STATE_POSITION ||
+        dcss.m_State[0].m_ERRCode != 0) {
+        OnRelease();
+        return -1;
+    }
     printf("current state of A arm:%d\n",dcss.m_State[0].m_CurState);
     printf("cmd state of A arm:%d\n",dcss.m_State[0].m_CmdState);
     printf("error code of A arms:%d\n",dcss.m_State[0].m_ERRCode);
