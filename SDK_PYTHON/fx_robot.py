@@ -1,3 +1,4 @@
+import ast
 import csv
 import ctypes
 import inspect
@@ -19,10 +20,19 @@ def update_text_file_simple(mode, data_list, filename):
         return False
     try:
         # 如果文件存在，读取内容；否则创建默认内容
+        lines = []
         if os.path.exists(filename):
             with open(filename, 'r', encoding='utf-8') as file:
                 lines = file.readlines()
         # 更新对应行
+        zero_row = ','.join(['0'] * 16) + '\n'
+        while len(lines) < 2:
+            lines.append(zero_row)
+        for index in range(2):
+            if not lines[index].strip():
+                lines[index] = zero_row
+            if not lines[index].endswith('\n'):
+                lines[index] += '\n'
         line_index = 0 if mode == 'A' else 1
         lines[line_index] = ','.join(str(x) for x in data_list) + '\n'
 
@@ -69,8 +79,8 @@ def read_csv_file_to_float_strict(filename, expected_columns=16):
         all_float_data = []
         for line_num, line in enumerate(non_empty_lines, 1):
             values = line.split(',')
-            # 过滤空值并去除空格
-            cleaned_values = [v.strip() for v in values if v.strip()]
+            # 保留空字段，避免额外分隔符导致参数列错位
+            cleaned_values = [v.strip() for v in values]
 
             # 验证列数
             if len(cleaned_values) != expected_columns:
@@ -208,16 +218,16 @@ def identify_and_calculate_length(input_data: Union[str, bytes]) -> dict:
                 pass  # 如果不是有效的十六进制，继续尝试其他解释
 
         # 检查是否已经是字节串表示形式（如b"\x06\x01\xe3\x08"）
-        if input_data.startswith('b"') and input_data.endswith('"'):
+        if input_data.startswith(('b"', "b'")) and input_data.endswith(input_data[1]):
             try:
-                # 使用eval安全地转换（注意：在实际应用中可能需要更安全的方法）
-                bytes_rep = eval(input_data)
+                # 只解析字节串字面量，不求值表达式
+                bytes_rep = ast.literal_eval(input_data)
                 if isinstance(bytes_rep, bytes):
                     result["type"] = "bytes representation string"
                     result["length_bytes"] = len(bytes_rep)
                     result["bytes_representation"] = bytes_rep
                     return result
-            except:
+            except (ValueError, SyntaxError):
                 pass
 
         # 如果不是上述任何类型，将其视为普通字符串
@@ -3075,9 +3085,18 @@ def update_text_file_simple(mode, data_list, filename):
     if mode not in ['A', 'B'] or len(data_list) != 16:
         return False
     try:
+        lines = []
         if os.path.exists(filename):
             with open(filename, 'r', encoding='utf-8') as file:
                 lines = file.readlines()
+        zero_row = ','.join(['0'] * 16) + '\n'
+        while len(lines) < 2:
+            lines.append(zero_row)
+        for index in range(2):
+            if not lines[index].strip():
+                lines[index] = zero_row
+            if not lines[index].endswith('\n'):
+                lines[index] += '\n'
         line_index = 0 if mode == 'A' else 1
         lines[line_index] = ','.join(str(x) for x in data_list) + '\n'
         with open(filename, 'w', encoding='utf-8') as file:
@@ -3119,7 +3138,7 @@ def read_csv_file_to_float_strict(filename, expected_columns=16):
         all_float_data = []
         for line_num, line in enumerate(non_empty_lines, 1):
             values = line.split(',')
-            cleaned_values = [v.strip() for v in values if v.strip()]
+            cleaned_values = [v.strip() for v in values]
             if len(cleaned_values) != expected_columns:
                 print(f"第{line_num}行: 期望{expected_columns}列，实际找到{len(cleaned_values)}列")
                 return -1
@@ -3229,15 +3248,15 @@ def identify_and_calculate_length(input_data: Union[str, bytes]) -> dict:
             except ValueError:
                 pass
 
-        if input_data.startswith('b"') and input_data.endswith('"'):
+        if input_data.startswith(('b"', "b'")) and input_data.endswith(input_data[1]):
             try:
-                bytes_rep = eval(input_data)
+                bytes_rep = ast.literal_eval(input_data)
                 if isinstance(bytes_rep, bytes):
                     result["type"] = "bytes representation string"
                     result["length_bytes"] = len(bytes_rep)
                     result["bytes_representation"] = bytes_rep
                     return result
-            except:
+            except (ValueError, SyntaxError):
                 pass
         try:
             bytes_rep = input_data.encode('utf-8')
