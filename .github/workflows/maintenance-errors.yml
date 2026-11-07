@@ -1,0 +1,32 @@
+name: Check maintenance error handling
+
+on:
+  pull_request:
+    paths:
+      - 'c\+\+_win/apply-brake_release-brake_demo.cpp'
+      - 'c\+\+_win/motor_encoder_clear_demo.cpp'
+      - 'c\+\+_win/MarvinSDK.h'
+      - 'tests/maintenance_errors.cpp'
+      - '.github/workflows/maintenance-errors.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  maintenance-errors:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Check errors using inert SDK replacements
+        run: |
+          for example in TEST_BRAKE TEST_ENCODER; do
+            g++ -std=c++11 -O1 -g -Wall -Wextra -Wconversion -Werror \
+              -fsanitize=address,undefined -fno-sanitize-recover=all \
+              tests/maintenance_errors.cpp -Ic++_win -D"$example" \
+              -o "$RUNNER_TEMP/maintenance-errors"
+            "$RUNNER_TEMP/maintenance-errors"
+          done

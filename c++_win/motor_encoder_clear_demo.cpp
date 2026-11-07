@@ -26,7 +26,7 @@
 int main()
 {
     // 初始化订阅数据的结构体
-    DCSS t;
+    DCSS dcss;
 
     // 查验连接是否成功
     bool init = OnLinkTo(192,168,1,190);
@@ -46,13 +46,13 @@ int main()
         int frame_update = 0;
 
         for (int i = 0; i < 5; i++) {
-          OnGetBuf(&t);
-          std::cout << "connect frames :" << t.m_Out[0].m_OutFrameSerial << std::endl;
+          OnGetBuf(&dcss);
+          std::cout << "connect frames :" << dcss.m_Out[0].m_OutFrameSerial << std::endl;
 
-          if (t.m_Out[0].m_OutFrameSerial != 0 &&
-              frame_update != t.m_Out[0].m_OutFrameSerial) {
+          if (dcss.m_Out[0].m_OutFrameSerial != 0 &&
+              frame_update != dcss.m_Out[0].m_OutFrameSerial) {
               motion_tag++;
-              frame_update = t.m_Out[0].m_OutFrameSerial;
+              frame_update = dcss.m_Out[0].m_OutFrameSerial;
           }
           usleep(100000);
         }
@@ -83,7 +83,11 @@ int main()
 
     //订阅数据确保下使能后第一轴/关节的电机内编值清零
     //订阅查看双臂是否都下使能
-    OnGetBuf(&dcss);
+    if (!OnGetBuf(&dcss)) {
+        std::cerr << "failed: cannot read arm state" << std::endl;
+        OnRelease();
+        return -1;
+    }
     printf("current state of A arm:%d\n",dcss.m_State[0].m_CurState);
     printf("current state of B arm:%d\n",dcss.m_State[1].m_CurState);
     if (dcss.m_State[0].m_CurState==0 && dcss.m_State[1].m_CurState==0)
@@ -92,8 +96,16 @@ int main()
         char paraName1[30]="RESETMOTENC0";
         //右臂电机内编
         char paraName11[30]="RESETMOTENC1";
-        OnSetIntPara(paraName1,axis);
-        OnSetIntPara(paraName11,axis);
+        if (OnSetIntPara(paraName1,axis) != 0) {
+            std::cerr << "failed: " << paraName1 << std::endl;
+            OnRelease();
+            return -1;
+        }
+        if (OnSetIntPara(paraName11,axis) != 0) {
+            std::cerr << "failed: " << paraName11 << std::endl;
+            OnRelease();
+            return -1;
+        }
         usleep(100000);
     } else{
         return -1;
@@ -104,7 +116,11 @@ int main()
 
     //订阅数据确保下使能后第一轴/关节的电机外编值清零
     //订阅查看双臂是否都下使能
-    OnGetBuf(&dcss);
+    if (!OnGetBuf(&dcss)) {
+        std::cerr << "failed: cannot read arm state" << std::endl;
+        OnRelease();
+        return -1;
+    }
     printf("current state of A arm:%d\n",dcss.m_State[0].m_CurState);
     printf("current state of B arm:%d\n",dcss.m_State[1].m_CurState);
     if (dcss.m_State[0].m_CurState==0 && dcss.m_State[1].m_CurState==0)
@@ -113,8 +129,16 @@ int main()
         char paraName2[30]="RESETEXTENC0";
         //右臂电机外编
         char paraName22[30]="RESETEXTENC1";
-        OnSetIntPara(paraName2,axis);
-        OnSetIntPara(paraName22,axis);
+        if (OnSetIntPara(paraName2,axis) != 0) {
+            std::cerr << "failed: " << paraName2 << std::endl;
+            OnRelease();
+            return -1;
+        }
+        if (OnSetIntPara(paraName22,axis) != 0) {
+            std::cerr << "failed: " << paraName22 << std::endl;
+            OnRelease();
+            return -1;
+        }
         usleep(100000);
     } else{
         return -1;
@@ -126,7 +150,11 @@ int main()
 
     //订阅数据确保下使能后第一轴/关节的电机编码器清错
     //订阅查看双臂是否都下使能
-    OnGetBuf(&dcss);
+    if (!OnGetBuf(&dcss)) {
+        std::cerr << "failed: cannot read arm state" << std::endl;
+        OnRelease();
+        return -1;
+    }
     printf("current state of A arm:%d\n",dcss.m_State[0].m_CurState);
     printf("current state of B arm:%d\n",dcss.m_State[1].m_CurState);
     if (dcss.m_State[0].m_CurState==0 && dcss.m_State[1].m_CurState==0)
@@ -135,8 +163,16 @@ int main()
         char paraName3[30]="CLEARMOTENC0";
         //右臂电机编码器
         char paraName33[30]="CLEARMOTENC1";
-        OnSetIntPara(paraName3,axis);
-        OnSetIntPara(paraName33,axis);
+        if (OnSetIntPara(paraName3,axis) != 0) {
+            std::cerr << "failed: " << paraName3 << std::endl;
+            OnRelease();
+            return -1;
+        }
+        if (OnSetIntPara(paraName33,axis) != 0) {
+            std::cerr << "failed: " << paraName33 << std::endl;
+            OnRelease();
+            return -1;
+        }
         usleep(100000);
     } else{
         return -1;

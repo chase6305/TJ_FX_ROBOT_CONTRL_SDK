@@ -78,24 +78,40 @@ int main()
     // char paraName[30];
     // memset(paraName,0,30);
     // sprintf(paraName,"BRAK0");
-    OnSetIntPara(paraName,2);
+    if (OnSetIntPara(paraName,2) != 0) {
+        std::cerr << "failed: " << paraName << std::endl;
+        OnRelease();
+        return -1;
+    }
     sleep(30); //预留时间去调整手臂的姿态
 
 
     //调整完毕,左臂强制抱闸
     // long retValue1=1;
-    OnSetIntPara(paraName,1);
+    if (OnSetIntPara(paraName,1) != 0) {
+        std::cerr << "failed: " << paraName << std::endl;
+        OnRelease();
+        return -1;
+    }
     usleep(100000);
 
 
     //右臂强制松闸
     char paraName1[30]="BRAK1";
-    OnSetIntPara(paraName1,2);
+    if (OnSetIntPara(paraName1,2) != 0) {
+        std::cerr << "failed: " << paraName1 << std::endl;
+        OnRelease();
+        return -1;
+    }
     sleep(30); //预留时间去调整手臂的姿态
 
 
     //调整完毕,右臂强制抱闸
-    OnSetIntPara(paraName1,1);
+    if (OnSetIntPara(paraName1,1) != 0) {
+        std::cerr << "failed: " << paraName1 << std::endl;
+        OnRelease();
+        return -1;
+    }
     usleep(100000);
 
 
