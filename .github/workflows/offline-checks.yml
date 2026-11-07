@@ -5,12 +5,22 @@ on:
     branches: [master]
     paths:
       - 'SDK_PYTHON/fx_robot.py'
+      - 'marvinSDK_ubuntu*.sh'
+      - 'contrlSDK/**'
+      - 'contrlSDK100343/**'
+      - 'kinematicsSDK/**'
+      - 'interferenceCheck/**'
       - 'tests/**'
       - '.github/workflows/offline-checks.yml'
   pull_request:
     branches: [master]
     paths:
       - 'SDK_PYTHON/fx_robot.py'
+      - 'marvinSDK_ubuntu*.sh'
+      - 'contrlSDK/**'
+      - 'contrlSDK100343/**'
+      - 'kinematicsSDK/**'
+      - 'interferenceCheck/**'
       - 'tests/**'
       - '.github/workflows/offline-checks.yml'
   workflow_dispatch:
@@ -34,3 +44,9 @@ jobs:
           persist-credentials: false
       - name: Run offline regressions without loading native SDKs
         run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Build both Linux SDK variants without running them
+        if: runner.os == 'Linux'
+        run: |
+          bash -n marvinSDK_ubuntu.sh marvinSDK_ubuntu_100343.sh
+          bash marvinSDK_ubuntu.sh
+          bash marvinSDK_ubuntu_100343.sh

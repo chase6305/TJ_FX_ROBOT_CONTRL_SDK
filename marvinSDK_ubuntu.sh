@@ -1,27 +1,21 @@
 #!/bin/bash
-
+set -euo pipefail
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 
 echo "start compile & replace so ..."
 
-# 编译 contrlSDK
-cd contrlSDK
-rm -f libMarvinSDK.so
-make clean 2>/dev/null
-make && chmod 777 libMarvinSDK.so
-cd ..
+# Build all required libraries before replacing installed copies.
+make -B -C contrlSDK libMarvinSDK.so
+make -B -C kinematicsSDK libKine.so
 
-# 编译 kinematicsSDK
-cd kinematicsSDK
-rm -f libKine.so
-make clean 2>/dev/null
-make && chmod 777 libKine.so
-cd ..
-
-# 复制文件
-[ -d "SDK_PYTHON" ] && cp -v contrlSDK/libMarvinSDK.so SDK_PYTHON/ 2>/dev/null && chmod 777 SDK_PYTHON/libMarvinSDK.so 2>/dev/null
-[ -d "SDK_PYTHON" ] && cp -v kinematicsSDK/libKine.so SDK_PYTHON/ 2>/dev/null && chmod 777 SDK_PYTHON/libKine.so 2>/dev/null
-[ -d "DEMO_C++" ] && cp -v contrlSDK/libMarvinSDK.so DEMO_C++/ 2>/dev/null && chmod 777 DEMO_C++/libMarvinSDK.so 2>/dev/null
-[ -d "DEMO_C++" ] && cp -v kinematicsSDK/libKine.so DEMO_C++/ 2>/dev/null && chmod 777 DEMO_C++/libKine.so 2>/dev/null
+chmod 755 contrlSDK/libMarvinSDK.so kinematicsSDK/libKine.so
+for destination in SDK_PYTHON "DEMO_C++"; do
+    if [ -d "$destination" ]; then
+        cp -v contrlSDK/libMarvinSDK.so "$destination/"
+        chmod 755 "$destination/libMarvinSDK.so"
+        cp -v kinematicsSDK/libKine.so "$destination/"
+        chmod 755 "$destination/libKine.so"
+    fi
+done
 
 echo "finished!"
-ls -l SDK_PYTHON/*.so DEMO_C++/*.so 2>/dev/null
