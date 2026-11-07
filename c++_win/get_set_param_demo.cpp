@@ -56,6 +56,7 @@ int main()
           std::cout << "success:机器人连接成功!" << std::endl;
         } else {
           std::cerr << "failed:机器人连接失败!" << std::endl;
+          OnRelease();
           return -1;
         }
         }
@@ -95,5 +96,5 @@ int main()
 
   //任务完成,释放内存使别的程序或者用户可以连接机器人
   OnRelease();
-  return 1;
+  return 0;
 }

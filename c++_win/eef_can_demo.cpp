@@ -100,6 +100,7 @@ int main()
             std::cout << "success:机器人连接成功!" << std::endl;
         } else {
             std::cerr << "failed:机器人连接失败!" << std::endl;
+            OnRelease();
             return -1;
         }
     }

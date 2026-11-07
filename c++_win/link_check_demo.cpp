@@ -64,5 +64,5 @@ int main() {
     usleep(100000);
     OnRelease();
     usleep(100000);
-    return 1;
+    return 0;
 }
