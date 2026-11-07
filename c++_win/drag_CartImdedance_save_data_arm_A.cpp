@@ -108,7 +108,7 @@ int main()
     {
         if(t.m_In[0].m_ImpType==2)
         {
-            if (t.m_In[0].m_DragSpType==2)
+            if (t.m_In[0].m_DragSpType==dgType)
             {
                 if(t.m_Out[0].m_TipDI==1)
                 {
@@ -144,17 +144,18 @@ int main()
           stage2=0;
           break;
         }
+        usleep(100000);
     }
 
 
     //保存采集数据
-    char* save_path="drag_cart_y.txt";
+    char save_path[]="drag_cart_y.txt";
     OnSaveGatherData(save_path);
     sleep(5);
 
     //拖动任务完成，退出拖动下使能
     OnClearSet();
-    OnSetImpType_A(0) ;//type = 1 关节阻抗;type = 2 坐标阻抗;type = 3 力控
+    OnSetDragSpace_A(0);
     OnSetSend();
     usleep(100000);
     OnClearSet();
