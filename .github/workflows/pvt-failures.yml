@@ -1,0 +1,28 @@
+name: Check PVT failure handling
+
+on:
+  pull_request:
+    paths:
+      - 'c\+\+_win/pvt_demo.cpp'
+      - 'c\+\+_win/MarvinSDK.h'
+      - 'tests/pvt_failures.cpp'
+      - '.github/workflows/pvt-failures.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pvt-failures:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Check PVT stages using an inert SDK replacement
+        run: |
+          g++ -std=c++11 -O1 -g -Wall -Wextra -Wconversion -Werror \
+            -fsanitize=address,undefined -fno-sanitize-recover=all \
+            tests/pvt_failures.cpp -Ic++_win -o "$RUNNER_TEMP/pvt-failures"
+          "$RUNNER_TEMP/pvt-failures"
