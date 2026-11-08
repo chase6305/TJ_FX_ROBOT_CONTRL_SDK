@@ -1,5 +1,6 @@
 import ast
 import csv
+import tempfile
 import ctypes
 import inspect
 import os
@@ -328,6 +329,33 @@ def structure2dict(dcss):
     result["ParaRetSerial"]=[dcss.m_ParaRetSerial]
 
     return result
+
+def _save_gather_data_as_csv(instance, path):
+    """Convert a synchronous native save using a private temporary file."""
+    try:
+        with tempfile.TemporaryDirectory(prefix='marvin-gather-') as directory:
+            raw_path = os.path.join(directory, 'gather.txt')
+            path_bytes = raw_path.encode('utf-8')
+            instance.save_data_path = path_bytes
+            instance.robot.OnSaveGatherData.argtypes = [ctypes.c_char_p]
+            instance.robot.OnSaveGatherData.restype = ctypes.c_bool
+            if not instance.robot.OnSaveGatherData(ctypes.c_char_p(path_bytes)):
+                return False
+            with open(raw_path, 'r') as source:
+                next(source, None)  # Skip the point-set header.
+                processed_data = []
+                for line in source:
+                    numbers = [part.split()[-1] for part in line.strip().split('$')
+                               if part.strip()]
+                    processed_data.append(numbers[2:] if len(numbers) >= 2 else numbers)
+            with open(path, 'w', newline='', encoding='utf-8') as destination:
+                csv.writer(destination).writerows(processed_data)
+        print(f"数据已成功保存到: {path}")
+        return True
+    except Exception as e:
+        print(f"保存失败: {e}")
+        return False
+
 
 class Marvin_Robot:
     def __init__(self):
@@ -658,40 +686,7 @@ class Marvin_Robot:
         :param path:本机绝对路径
         :return: bool
         '''
-        path1='tmp.txt'
-        self.save_data_path = path1.encode('utf-8')
-        path_char = ctypes.c_char_p(self.save_data_path)
-        self.robot.OnSaveGatherData(path_char)
-
-        time.sleep(0.2)
-        with open(path1, 'r') as file:
-            lines = file.readlines()
-        processed_data=[]
-        lines = lines[1:]
-        for i, line in enumerate(lines):
-            parts = line.strip().split('$')
-            numbers = []
-            for part in parts:
-                if part:
-                    num_str = part.split()[-1]
-                    numbers.append(num_str)
-            if len(numbers) >= 2:
-                numbers = numbers[2:]
-            processed_data.append(numbers)
-
-        try:
-            with open(path, 'w', newline='', encoding='utf-8') as csvfile:
-                writer = csv.writer(csvfile)
-                writer.writerows(processed_data)
-            print(f"数据已成功保存到: {path}")
-            if os.path.exists(path1):
-                os.remove(path1)
-            return True
-        except Exception as e:
-            print(f"保存失败: {e}")
-            if os.path.exists(path1):
-                os.remove(path1)
-            return False
+        return _save_gather_data_as_csv(self, path)
 
     def soft_stop(self, arm: str):
         '''机械臂急停
@@ -2109,40 +2104,7 @@ class Concise_Marvin_Robot:
         :param path:本机绝对路径
         :return:
         '''
-        path1='tmp.txt'
-        self.save_data_path = path1.encode('utf-8')
-        path_char = ctypes.c_char_p(self.save_data_path)
-        self.robot.OnSaveGatherData(path_char)
-
-        time.sleep(0.2)
-        with open(path1, 'r') as file:
-            lines = file.readlines()
-        processed_data=[]
-        lines = lines[1:]
-        for i, line in enumerate(lines):
-            parts = line.strip().split('$')
-            numbers = []
-            for part in parts:
-                if part:
-                    num_str = part.split()[-1]
-                    numbers.append(num_str)
-            if len(numbers) >= 2:
-                numbers = numbers[2:]
-            processed_data.append(numbers)
-
-        try:
-            with open(path, 'w', newline='', encoding='utf-8') as csvfile:
-                writer = csv.writer(csvfile)
-                writer.writerows(processed_data)
-            print(f"数据已成功保存到: {path}")
-            if os.path.exists(path1):
-                os.remove(path1)
-            return True
-        except Exception as e:
-            print(f"保存失败: {e}")
-            if os.path.exists(path1):
-                os.remove(path1)
-            return False
+        return _save_gather_data_as_csv(self, path)
 
     def soft_stop(self, arm: str):
         '''机械臂急停
