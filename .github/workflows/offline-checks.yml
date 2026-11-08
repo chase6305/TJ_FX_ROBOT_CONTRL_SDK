@@ -5,6 +5,7 @@ on:
     branches: [master]
     paths:
       - 'SDK_PYTHON/fx_robot.py'
+      - 'SDK_PYTHON/fx_interference.py'
       - 'marvinSDK_ubuntu*.sh'
       - 'contrlSDK/**'
       - 'contrlSDK100343/**'
@@ -16,6 +17,7 @@ on:
     branches: [master]
     paths:
       - 'SDK_PYTHON/fx_robot.py'
+      - 'SDK_PYTHON/fx_interference.py'
       - 'marvinSDK_ubuntu*.sh'
       - 'contrlSDK/**'
       - 'contrlSDK100343/**'
@@ -42,7 +44,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - name: Run offline regressions without loading native SDKs
+      - name: Run offline regressions without connecting to a controller
         run: python -m unittest discover -s tests -p 'test_*.py' -v
       - name: Build both Linux SDK variants without running them
         if: runner.os == 'Linux'

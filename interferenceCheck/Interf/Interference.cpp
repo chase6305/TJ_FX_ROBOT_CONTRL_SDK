@@ -22,7 +22,10 @@ FX_InterfHandle FX_Interf_Create()
 void FX_Interf_Destroy(FX_InterfHandle handle)
 {
     if (handle)
+    {
+        delete handle->_base;
         delete handle;
+    }
     
 }
 

@@ -131,9 +131,10 @@ class Marvin_Interference:
         """创建干涉检测单例句柄
 
         Returns:
-            int 句柄地址(整数), 失败返回 None
+            int 句柄地址(整数), 失败返回 None。重复调用返回已有句柄。
         """
-        self._handle = self.interf.FX_Interf_Create()
+        if self._handle is None:
+            self._handle = self.interf.FX_Interf_Create()
         return self._handle
 
     def destroy(self):
